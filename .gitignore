@@ -19,6 +19,7 @@ venv/
 
 # Local agent / IDE state
 .claude/
+.jules/
 
 # Build output
 site/
