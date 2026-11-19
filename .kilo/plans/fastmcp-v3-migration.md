@@ -1,44 +1,27 @@
-# Plan: FastMCP v3 migration (deferred)
+# Plan: FastMCP major-version migration (superseded)
 
-> Status: **deferred**. Do after `crawl4ai-modernization.md` and
-> `remaining-modernization.md` land and are verified. Until then the pin is
-> `fastmcp>=2.3,<3`.
+> Status: **superseded**. This plan described a deliberate FastMCP 2.x → 3.x
+> migration. It is no longer needed: `remaining-modernization.md` pinned FastMCP
+> to `fastmcp==4.2.2` directly (verified green on 4.2.2) instead of the 2.x pin,
+> because the code already depended on ≥3.x behavior and a fresh
+> `pip install` had been resolving 3.x/4.x for some time. See
+> `remaining-modernization.md` for that decision.
 
-## Why defer
+Key facts that made the 2.x → 3.x migration moot:
 
-FastMCP moved to `PrefectHQ/fastmcp` and shipped v3 (v4 is arriving). This
-code's FastMCP surface is small, so most v3 breaking changes do not apply — but
-that must be verified in isolation rather than bundled into the Crawl4AI auth
-change.
+- `@mcp.tool` per-parameter descriptions (from the `Args:` docstrings) only
+  materialize in the MCP JSON schema on FastMCP **≥3.x**. On 2.x they are
+  absent, so the 2.x pin would have regressed the agent-facing tool schema.
+- The code surface is small and already works on 4.x: `FastMCP(instructions=)`,
+  `@mcp.tool`, `mcp.http_app(path="/")`, `api.create_app` lifespan wiring, and
+  `from fastmcp import Client` (CI e2e) were all verified against 4.2.2.
 
-## Scope (from the FastMCP 2→3 upgrade guide)
+## When FastMCP 5.x ships
 
-Verify each against the actual v3 release:
+Re-apply the verification below against 5.x, then decide whether to bump the
+`fastmcp==4.2.2` pin:
 
-1. `FastMCP("web-tool", instructions=...)` — `instructions` is not in the removed
-   constructor-kwarg list, so it should survive; confirm.
-2. `mcp.http_app(path="/")` — confirm the `path` kwarg survives v3. If not, use
-   `mcp.run(transport="http", ...)` or the new mount semantics.
-3. `@mcp.tool` decorators now return the original function. This code already
-   ignores decorated-object attributes, so no change expected.
-4. `from fastmcp import Client` (CI e2e) — still present in v3.
-5. `api.create_app` mounts the http app with
-   `lifespan=getattr(mcp_app, "lifespan", None)` — confirm lifespan wiring is
-   still correct in v3.
-6. Not applicable here (verify none are used): prompts (`mcp.types.PromptMessage`),
-   auth providers, `WSTransport`, OpenAPI provider, `get_tools()`/`list_tools()`,
-   `ctx.set_state/get_state`, background tasks.
-
-Then bump the pin to `fastmcp>=3,<4` and re-run the full check below.
-
-## Verification
-
-- `pytest -q` green (incl. `test_mcp_schema.py` — `mcp.list_tools()` returns both
-  tools with provider-agnostic descriptions).
+- `pytest -q` green (incl. `test_mcp_schema.py` and the `test_api.py` parity
+  test — both are written version-agnostic so they survive a major bump).
 - `make up && make smoke` green.
 - CI e2e (`from fastmcp import Client`) green.
-
-## Risks / open questions
-
-- Decide whether to jump straight to v3 or wait for v4 to settle, given v4
-  removes the v3 `FASTMCP_DECORATOR_MODE=object` escape hatch (unused here).

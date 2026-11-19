@@ -10,7 +10,8 @@ Split so each is independently reviewable and mergeable:
    `make smoke`. This is the only thing broken today for a fresh install.
 2. **remaining-modernization.md** — pin FastMCP to 2.x, pin `searxng` image,
    Python 3.13 bump, doc-drift cleanup, and optional cruft removal.
-3. **fastmcp-v3-migration.md** — deliberately deferred: move FastMCP 2.x → 3.x
-   as a separate, verified step after the first two land.
+3. **fastmcp-v3-migration.md** — superseded: the FastMCP 2.x → 3.x migration was
+   folded into `remaining-modernization.md`, which pinned `fastmcp==4.2.2`
+   directly.
 
 Suggested order: 1 → 2 → 3. Each plan lists its own verification.
