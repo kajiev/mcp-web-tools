@@ -63,7 +63,7 @@ web_extract:
 | var | default | purpose |
 |---|---|---|
 | `SEARXNG_SECRET` | _(required)_ | HMAC signing key for SearXNG — **not** an API key |
-| `CRAWL4AI_API_TOKEN` | _(empty)_ | optional bearer token if Crawl4AI is locked down |
+| `CRAWL4AI_API_TOKEN` | _(required)_ | bearer token for Crawl4AI (0.9.x is secure-by-default; without it the server binds loopback-only) |
 | `API_TOKEN` | _(empty)_ | optional bearer token for REST API (`/api/v1/*`) |
 | `MCP_TRANSPORT` | `http` | `http` (streamable-http) or `stdio` (subprocess) |
 | `MCP_PORT` | `8000` | host port for MCP + REST API (also used for `make smoke`) |
@@ -78,11 +78,13 @@ web_extract:
 | `EXA_API_KEY` | _(empty)_ | optional; referenced from YAML via `${EXA_API_KEY}` |
 | `VALKEY_IMAGE` | `valkey/valkey:8-alpine` | pin Valkey image |
 | `SEARXNG_IMAGE` | `searxng/searxng:latest` | pin SearXNG image |
-| `CRAWL4AI_IMAGE` | `unclecode/crawl4ai:latest` | pin Crawl4AI image (recommended for prod) |
+| `CRAWL4AI_IMAGE` | `unclecode/crawl4ai:0.9.5` | pin Crawl4AI image |
 
 After changing `MCP_PORT`, run `make restart` (not just `up`) so the new host-port mapping takes effect.
 
 `SEARXNG_SECRET` is **not** an API key — nothing sends it. SearXNG uses it server-side to sign image-proxy URLs (HMAC) and internal tokens; it just needs to be random and stable. `install.sh` generates it; the SearXNG container won't start without one.
+
+`CRAWL4AI_API_TOKEN` **is** a bearer token and is required since Crawl4AI 0.9.0: the container sends it as `Authorization: Bearer <token>` on every request except `GET /health`, and without it Crawl4AI binds loopback-only so the `web-mcp` container cannot reach it. `install.sh` generates it alongside `SEARXNG_SECRET`.
 
 Search quality is tuned in [`searxng/settings.yml`](https://github.com/datvietvac-techhub/mcp-web-tools/blob/main/searxng/settings.yml) (engines enabled, weights, categories) — restart the `searxng` service after editing.
 

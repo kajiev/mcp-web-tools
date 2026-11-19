@@ -25,7 +25,7 @@ sudo usermod -aG docker "$USER" && newgrp docker
 curl -fsSL https://github.com/datvietvac-techhub/mcp-web-tools/releases/latest/download/install.sh | bash
 ```
 
-The script clones the repo to `~/.local/share/mcp-web-tool` (override with `--dir <path>`), runs prerequisite checks, creates `.env` from `.env.example`, and generates a random `SEARXNG_SECRET`. It does **not** start containers — that's `make up`. Idempotent and safe to re-run.
+The script clones the repo to `~/.local/share/mcp-web-tool` (override with `--dir <path>`), runs prerequisite checks, creates `.env` from `.env.example`, and generates a random `SEARXNG_SECRET` and `CRAWL4AI_API_TOKEN`. It does **not** start containers — that's `make up`. Idempotent and safe to re-run.
 
 Forward flags after `--`:
 
@@ -54,7 +54,7 @@ curl -fsSL https://github.com/datvietvac-techhub/mcp-web-tools/releases/download
 ```bash
 git clone https://github.com/datvietvac-techhub/mcp-web-tools.git
 cd mcp-web-tools
-./install.sh        # bootstrap only — prereqs, .env, SEARXNG_SECRET
+./install.sh        # bootstrap only — prereqs, .env, SEARXNG_SECRET + CRAWL4AI_API_TOKEN
 make up             # start the stack
 make smoke          # verify endpoints
 ```
@@ -99,6 +99,7 @@ Forward installer flags with `ARGS`, e.g. `make update ARGS="--skip-checks"`.
 ```bash
 cp .env.example .env
 echo "SEARXNG_SECRET=$(openssl rand -hex 32)" >> .env
+echo "CRAWL4AI_API_TOKEN=$(openssl rand -hex 32)" >> .env
 docker compose up -d --build
 docker compose ps        # wait until searxng + crawl4ai are "healthy"
 ```

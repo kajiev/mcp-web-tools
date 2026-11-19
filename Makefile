@@ -60,7 +60,7 @@ smoke: ## Hit all endpoints to confirm they respond
 	MCP_PORT=$${MCP_PORT:-8000}; \
 	set -e; \
 	echo "SearXNG  :" ; $(COMPOSE) exec -T searxng wget -q -O /dev/null "http://localhost:8080/search?q=hello&format=json" ; echo "  ok" ; \
-	echo "Crawl4AI :" ; $(COMPOSE) exec -T crawl4ai python -c "import urllib.request; req=urllib.request.Request('http://localhost:11235/md', data=b'{\"url\":\"https://example.com\",\"f\":\"fit\"}', headers={'Content-Type': 'application/json'}, method='POST'); urllib.request.urlopen(req, timeout=30).read()" >/dev/null ; echo "  ok" ; \
+	echo "Crawl4AI :" ; $(COMPOSE) exec -T crawl4ai python -c "import urllib.request; req=urllib.request.Request('http://localhost:11235/md', data=b'{\"url\":\"https://example.com\",\"f\":\"fit\"}', headers={'Content-Type': 'application/json', 'Authorization': 'Bearer $$CRAWL4AI_API_TOKEN'}, method='POST'); urllib.request.urlopen(req, timeout=30).read()" >/dev/null ; echo "  ok" ; \
 	echo "Health   :" ; curl -sf "http://localhost:$$MCP_PORT/healthz" >/dev/null ; echo "  ok" ; \
 	echo "REST     :" ; \
 	if [ -n "$${API_TOKEN:-}" ]; then \

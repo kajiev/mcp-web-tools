@@ -36,13 +36,15 @@ tolerates.
    file already forwards it to both `crawl4ai` and `web-mcp`.
 3. **Document the token** in `.env.example`: `CRAWL4AI_API_TOKEN` is now
    **required** (not optional) — a real bearer token, not a no-op.
-4. **Confirm the 0.9.x auth model** before coding `crawl4ai.py`:
-   - docs.crawl4ai.com (0.9.x): direct `Authorization: Bearer $CRAWL4AI_API_TOKEN`
-     on all non-`/health` endpoints → `crawl4ai.py` already sends this when the
-     token is non-empty.
-   - Newer `deploy/docker/server.py` (unreleased main): `POST /token` mints a
-     JWT, and `/md` requires it. If the pinned tag uses this, add a `/token`
-     exchange in `crawl4ai.py` before `/md`. **Verify which applies.**
+4. **Auth model — RESOLVED (verified against tag `v0.9.5`).** The released
+   0.9.x uses **direct bearer**: `Authorization: Bearer $CRAWL4AI_API_TOKEN` on
+   all non-`/health` endpoints (`/md` is gated by `Depends(token_dep)` in
+   `deploy/docker/server.py`). `POST /token` only mints *data-scope* JWTs for
+   the optional `jwt_enabled` feature and is not our path. So `crawl4ai.py`
+   already does the right thing — **no provider code change**.
+   - `/md` request body `{url, f, q, c}` and response `{url, filter, query,
+     cache, markdown, success}` (markdown is a plain string) are confirmed at
+     tag `v0.9.5` — `coerce_markdown()` handles it unchanged.
 5. **Fix `make smoke`** (Makefile line 63): include
    `Authorization: Bearer $CRAWL4AI_API_TOKEN` on the `/md` request; keep the
    `{url, f:"fit"}` body.
@@ -65,6 +67,7 @@ tolerates.
 
 ## Risks / open questions
 
-- Exact 0.9.x tag + auth model (direct bearer vs `/token`+JWT) must be confirmed.
+- ~~Exact 0.9.x tag + auth model~~ — **resolved**: pin `unclecode/crawl4ai:0.9.5`
+  (latest; fixes CVE-2026-119120 affecting 0.9.0–0.9.4), direct bearer auth.
 - `llm`/`bm25` modes may need an LLM provider configured server-side in 0.9.x
   (`fit`/`raw` are free and deterministic). Confirm the default path stays free.

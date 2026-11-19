@@ -187,6 +187,31 @@ def test_web_extractor_explicit_provider(monkeypatch):
     assert out["results"][0]["markdown"] == "ok"
 
 
+def test_web_extractor_sends_bearer_token(monkeypatch):
+    client = FakeClient(
+        post_responses=[FakeResponse({"url": "https://example.com", "markdown": "ok"})]
+    )
+    monkeypatch.setattr(provider_http, "_client", client)
+    monkeypatch.setattr(provider_http, "CRAWL4AI_API_TOKEN", "secret-token")
+
+    out = run(tools.web_extractor_impl("https://example.com", provider="crawl4ai"))
+
+    assert out["provider"] == "crawl4ai"
+    assert client.post_calls[0][1]["headers"]["Authorization"] == "Bearer secret-token"
+
+
+def test_web_extractor_omits_auth_without_token(monkeypatch):
+    client = FakeClient(
+        post_responses=[FakeResponse({"url": "https://example.com", "markdown": "ok"})]
+    )
+    monkeypatch.setattr(provider_http, "_client", client)
+    monkeypatch.setattr(provider_http, "CRAWL4AI_API_TOKEN", "")
+
+    run(tools.web_extractor_impl("https://example.com", provider="crawl4ai"))
+
+    assert "Authorization" not in client.post_calls[0][1]["headers"]
+
+
 def test_web_search_cache_hit_skips_second_network(monkeypatch):
     client = FakeClient(
         get_responses=[

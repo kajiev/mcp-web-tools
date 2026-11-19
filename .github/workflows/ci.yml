@@ -20,10 +20,11 @@ jobs:
     timeout-minutes: 20
 
     env:
-      # Keep Crawl4AI pinned because its /md API shape has changed between releases.
+      # Pin Crawl4AI: 0.9.x is secure-by-default (requires CRAWL4AI_API_TOKEN,
+      # generated into .env by ./install.sh). 0.9.5 fixes CVE-2026-119120.
       VALKEY_IMAGE: valkey/valkey:8-alpine
       SEARXNG_IMAGE: searxng/searxng:latest
-      CRAWL4AI_IMAGE: unclecode/crawl4ai:0.7.4
+      CRAWL4AI_IMAGE: unclecode/crawl4ai:0.9.5
 
     steps:
       - name: Checkout

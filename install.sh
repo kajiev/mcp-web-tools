@@ -20,7 +20,7 @@
 #   1. (curl-pipe mode only) clone or update the repo, then re-exec from it
 #   2. check prerequisites (docker, docker compose v2, daemon reachable, free ports)
 #   3. create .env from .env.example if missing
-#   4. generate SEARXNG_SECRET if it's empty
+#   4. generate SEARXNG_SECRET + CRAWL4AI_API_TOKEN if empty
 #   5. optionally pull upstream images (--pull)
 #
 # Flags:
@@ -197,22 +197,28 @@ else
   info "config/providers.yaml already exists — leaving it as is"
 fi
 
-# ── 3. SEARXNG_SECRET ─────────────────────────────────────────────────────────
+# ── 3. secrets (SEARXNG_SECRET + CRAWL4AI_API_TOKEN) ─────────────────────────
 gen_secret() {
   if command -v openssl >/dev/null 2>&1; then openssl rand -hex 32
   elif command -v python3 >/dev/null 2>&1; then python3 -c 'import secrets;print(secrets.token_hex(32))'
   else head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n'; fi
 }
-current_secret="$(grep -E '^SEARXNG_SECRET=' .env | head -1 | cut -d= -f2- || true)"
-if [ -z "$current_secret" ]; then
-  secret="$(gen_secret)"
-  # portable in-place edit
-  tmp="$(mktemp)"; awk -v s="$secret" '/^SEARXNG_SECRET=/{print "SEARXNG_SECRET=" s; next} {print}' .env > "$tmp" && mv "$tmp" .env
-  grep -qE '^SEARXNG_SECRET=' .env || printf 'SEARXNG_SECRET=%s\n' "$secret" >> .env
-  ok "generated SEARXNG_SECRET (32 random bytes, hex)"
-else
-  ok "SEARXNG_SECRET already set"
-fi
+ensure_secret() {
+  # $1 = env var name (e.g. SEARXNG_SECRET). Writes into .env if unset/empty.
+  name="$1"
+  current="$(grep -E "^${name}=" .env | head -1 | cut -d= -f2- || true)"
+  if [ -n "$current" ]; then
+    ok "${name} already set"
+    return
+  fi
+  value="$(gen_secret)"
+  # portable in-place edit: replace the existing (empty) assignment, or append.
+  tmp="$(mktemp)"; awk -v n="$name" -v v="$value" 'index($0, n "=") == 1 { print n "=" v; next } { print }' .env > "$tmp" && mv "$tmp" .env
+  grep -qE "^${name}=" .env || printf '%s=%s\n' "$name" "$value" >> .env
+  ok "generated ${name} (32 random bytes, hex)"
+}
+ensure_secret SEARXNG_SECRET
+ensure_secret CRAWL4AI_API_TOKEN
 
 # ── 4. optional image pull ────────────────────────────────────────────────────
 if [ "$DO_PULL" -eq 1 ]; then

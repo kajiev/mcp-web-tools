@@ -38,12 +38,12 @@ services:
       start_period: 10s
 
   crawl4ai:
-    # Pin to a specific release in production via CRAWL4AI_IMAGE in .env,
-    # e.g. CRAWL4AI_IMAGE=unclecode/crawl4ai:0.7.4
-    image: ${CRAWL4AI_IMAGE:-unclecode/crawl4ai:latest}
+    # Crawl4AI is secure-by-default since 0.9.0: without a token it binds
+    # loopback-only, so web-mcp could not reach it. The token is required.
+    image: ${CRAWL4AI_IMAGE:-unclecode/crawl4ai:0.9.5}
     container_name: web-tool-crawl4ai
     environment:
-      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN:-}
+      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN:?set CRAWL4AI_API_TOKEN in .env}
     shm_size: "1g"
     networks:
       - web-tool-net
@@ -63,7 +63,7 @@ services:
     environment:
       - SEARXNG_URL=http://searxng:8080
       - CRAWL4AI_URL=http://crawl4ai:11235
-      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN:-}
+      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN:?set CRAWL4AI_API_TOKEN in .env}
       - MCP_TRANSPORT=${MCP_TRANSPORT:-http}
       - MCP_HOST=0.0.0.0
       - MCP_PORT=${MCP_PORT:-8000}

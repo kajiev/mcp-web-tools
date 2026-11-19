@@ -67,7 +67,7 @@ Fallback order is fixed: **tavily → firecrawl → exa → local** (SearXNG for
 curl -fsSL https://github.com/datvietvac-techhub/mcp-web-tools/releases/latest/download/install.sh | bash
 ```
 
-The script clones to `~/.local/share/mcp-web-tool` (override with `--dir <path>`), creates `.env`, and generates a random `SEARXNG_SECRET`. It does **not** start containers — that's `make up`.
+The script clones to `~/.local/share/mcp-web-tool` (override with `--dir <path>`), creates `.env`, and generates a random `SEARXNG_SECRET` and `CRAWL4AI_API_TOKEN`. It does **not** start containers — that's `make up`.
 
 **2. Start the stack:**
 
