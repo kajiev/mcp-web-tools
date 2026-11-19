@@ -17,7 +17,7 @@ Four services run on a single bridge network (`web-tool-net`). Agents talk to `w
 |---|---|---|
 | Config | `config/providers.yaml` | ordered `web_search` / `web_extract` chains + credentials |
 | Core | `mcp/tools.py` | `web_search_impl`, `web_extractor_impl`, TTL cache |
-| Providers | `mcp/providers/*.py` | Brave, Tavily, SearXNG, Crawl4AI adapters |
+| Providers | `mcp/providers/*.py` | Tavily, Firecrawl, Exa, SearXNG, Crawl4AI adapters |
 | Chain | `mcp/providers/chain.py` | hard-failure fallback orchestration |
 | MCP exposer | `mcp/server.py` | FastMCP tool registration |
 | HTTP exposer | `mcp/api.py` | REST routes, validation, optional bearer auth |
@@ -80,8 +80,8 @@ flowchart LR
 | service | image | port | role |
 |---|---|---|---|
 | `valkey` | `valkey/valkey:8-alpine` | — (internal) | cache + rate-limiter backend for SearXNG; data persisted to the `valkey-data` volume |
-| `searxng` | `searxng/searxng:latest` | `8080` internal | metasearch frontend; JSON API enabled; settings in `searxng/settings.yml` |
-| `crawl4ai` | `unclecode/crawl4ai:latest` | `11235` internal | headless-browser crawler; exposes `/md` and `/crawl`; `shm_size: 1g` avoids Chromium crashes |
+| `searxng` | `searxng/searxng:2026.11.19-368baa340` | `8080` internal | metasearch frontend; JSON API enabled; settings in `searxng/settings.yml` |
+| `crawl4ai` | `unclecode/crawl4ai:0.9.5` | `11235` internal | headless-browser crawler; exposes `/md` and `/crawl`; `shm_size: 1g` avoids Chromium crashes |
 | `web-mcp` | built from [`mcp/Dockerfile`](https://github.com/datvietvac-techhub/mcp-web-tools/blob/main/mcp/Dockerfile) | `${MCP_PORT:-8000}` host | unified ASGI app: MCP at `/mcp`, REST at `/api/v1/*`, health at `/healthz` |
 
 ## Request flow

@@ -23,7 +23,7 @@ jobs:
       # Pin Crawl4AI: 0.9.x is secure-by-default (requires CRAWL4AI_API_TOKEN,
       # generated into .env by ./install.sh). 0.9.5 fixes CVE-2026-119120.
       VALKEY_IMAGE: valkey/valkey:8-alpine
-      SEARXNG_IMAGE: searxng/searxng:latest
+      SEARXNG_IMAGE: searxng/searxng:2026.11.19-368baa340
       CRAWL4AI_IMAGE: unclecode/crawl4ai:0.9.5
 
     steps:
@@ -36,7 +36,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Install Python test dependencies
         run: pip install --quiet -r requirements-dev.txt

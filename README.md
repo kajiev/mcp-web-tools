@@ -6,7 +6,7 @@
 [![Last commit](https://img.shields.io/github/last-commit/datvietvac-techhub/mcp-web-tools)](https://github.com/datvietvac-techhub/mcp-web-tools/commits/main)
 [![Stars](https://img.shields.io/github/stars/datvietvac-techhub/mcp-web-tools?style=social)](https://github.com/datvietvac-techhub/mcp-web-tools/stargazers)
 [![MCP Compatible](https://img.shields.io/badge/MCP-compatible-7c3aed)](https://modelcontextprotocol.io)
-[![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](mcp/Dockerfile)
+[![Python](https://img.shields.io/badge/python-3.13-3776AB?logo=python&logoColor=white)](mcp/Dockerfile)
 
 > Previously known as **Agent Web Tool MCP** / [`agent-web-tool-mcp`](https://github.com/datvietvac-techhub/agent-web-tool-mcp). The repo was renamed to better match its purpose — GitHub redirects old URLs, so existing clones and links keep working.
 

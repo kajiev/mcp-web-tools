@@ -19,6 +19,8 @@ def _prop(schema: dict, name: str) -> dict:
 
 @pytest.fixture
 def mcp_tools():
+    if hasattr(server.mcp, "get_tools"):
+        return asyncio.run(server.mcp.get_tools()).values()
     return asyncio.run(server.mcp.list_tools())
 
 

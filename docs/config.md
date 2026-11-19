@@ -12,7 +12,7 @@ Configuration is split between `.env` (service URLs, timeouts, secrets) and [`co
 Ordered lists define which backend runs first. **First entry = primary**, **last = final fallback**. The runner tries each provider top-to-bottom and stops on the first successful response. Reordering the YAML changes priority.
 
 ```bash
-make config   # write providers.yaml; prompts for Brave and Tavily keys (Enter to skip)
+make config   # write providers.yaml; prompts for Tavily, Firecrawl, Exa keys (Enter to skip)
 ```
 
 Order is **fixed**: tavily → firecrawl → exa → local (`searxng` / `crawl4ai`). You only choose whether to supply API keys for the SaaS providers.
@@ -77,7 +77,7 @@ web_extract:
 | `FIRECRAWL_API_KEY` | _(empty)_ | optional; referenced from YAML via `${FIRECRAWL_API_KEY}` |
 | `EXA_API_KEY` | _(empty)_ | optional; referenced from YAML via `${EXA_API_KEY}` |
 | `VALKEY_IMAGE` | `valkey/valkey:8-alpine` | pin Valkey image |
-| `SEARXNG_IMAGE` | `searxng/searxng:latest` | pin SearXNG image |
+| `SEARXNG_IMAGE` | `searxng/searxng:2026.11.19-368baa340` | pin SearXNG image |
 | `CRAWL4AI_IMAGE` | `unclecode/crawl4ai:0.9.5` | pin Crawl4AI image |
 
 After changing `MCP_PORT`, run `make restart` (not just `up`) so the new host-port mapping takes effect.

@@ -129,6 +129,8 @@ def test_mcp_and_http_parity(monkeypatch):
 
     http_client = TestClient(api.create_app())
     http_out = http_client.post("/api/v1/search", json={"query": "parity"}).json()
-    mcp_out = run(server.web_search("parity"))
+    tool = server.web_search
+    fn = tool if callable(tool) else tool.fn
+    mcp_out = run(fn("parity"))
 
     assert http_out == mcp_out
